@@ -199,6 +199,7 @@ export default function WorkflowCanvas() {
     }));
 
     const payload: Workflow = {
+      id: workflow?.id ?? "not_saved",
       title: workflow?.title ?? "Saved Workflow",
       description: workflow?.description ?? "",
       steps,
@@ -212,6 +213,8 @@ export default function WorkflowCanvas() {
   const { saveNewWorkflow, isPending: isSavingToDB } = useSaveNewWorkflowToDB();
   const { updateWorkflow, isPending: isUpdatingToDB } = useUpdateWorkflowToDB();
   const saveWorkflowToDB = async () => {
+    saveWorkflowToStore();
+
     const steps = nodes.map((n) => ({
       id: n.id,
       title: n.data?.label ?? "",
@@ -234,37 +237,38 @@ export default function WorkflowCanvas() {
       let savedWorkflow;
       if (workflow?.id === "not_saved") {
         savedWorkflow = await saveNewWorkflow(payload);
-        dispatch(clearWorkflow());
       } else {
         // payload.id = workflow?.id;
         savedWorkflow = await updateWorkflow({
           id: workflow?.id || "",
           payload,
         });
-        dispatch(clearWorkflow());
       }
 
-      const edges = steps
-        .filter((step: Step) => step.parentId)
-        .map((step: Step) => ({
-          id: `${step.parentId}-${step.id}`,
-          source: step.parentId,
-          target: step.id,
-          type: "default",
-          animated: false,
-          style: { stroke: "#333", strokeWidth: 2 },
-          markerEnd: { type: "arrowclosed", color: "#333" },
-        }));
+      // Build parent-child edges
+      // const parentChildEdges = steps
+      //   .filter((step: Step) => step.parentId)
+      //   .map((step: Step) => ({
+      //     id: `${step.parentId}-${step.id}`,
+      //     source: step.parentId,
+      //     target: step.id,
+      //     type: "default",
+      //     animated: false,
+      //     style: { stroke: "#333", strokeWidth: 2 },
+      //     markerEnd: { type: "arrowclosed", color: "#333" },
+      //   }));
+      // Merge with existing edges, avoiding duplicates (by id)
+      // const existingEdgeIds = new Set(parentChildEdges.map((e) => e.id));
+      // const preservedEdges = (savedWorkflow?.edges || []).filter(
+      //   (e: any) => !existingEdgeIds.has(e.id)
+      // );
+      // const mergedEdges = [...preservedEdges, ...parentChildEdges];
 
       const newPayload: Workflow = {
-        id: savedWorkflow?.id || "",
-        title: savedWorkflow?.title || "",
-        description: savedWorkflow?.description || "",
-        difficulty: savedWorkflow?.difficulty || "",
-        steps: steps || [],
-        edges: edges || [],
+        ...savedWorkflow,
+        edges: workflow?.edges || [],
       };
-
+      dispatch(clearWorkflow());
       dispatch(setWorkflow(newPayload));
       alert("Workflow saved to database!");
     } catch (err) {
@@ -272,7 +276,7 @@ export default function WorkflowCanvas() {
     }
   };
 
-  /* ---------- Sidebar Node Edit ---------- */
+  /* ---------- Sidebar Node Edit ----------- */
   const onNodeClick = useCallback((_e: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
     setTitle(node.data.label || "");

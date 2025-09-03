@@ -11,7 +11,7 @@ type Data = {
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 const accesToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMmJlMzU3ZS0zNDY2LTQ1ZGItOGU1Yi03Njg1ODQzODU2Y2UiLCJ1c2VyRW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiaWF0IjoxNzU2ODU5ODQyLCJleHAiOjE3NTY4NjM0NDJ9.zrlhccOrTZZtgJQX5p4AuGKx9DYa55pYhaeN_0c1iMk";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyM2JlZGJjNS01YzFlLTQ3ZWQtYTNjZS0zZWE0NTMwNjQ0NzMiLCJ1c2VyRW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiaWF0IjoxNzU2OTEzMTU5LCJleHAiOjE3NTY5MTY3NTl9.mwac4tEABE59HfVWddhFuq-NeCpyMxPCIsA3KrRyjX8";
 
 export const useGenerateWorkflow = () => {
   const createWorkflowReq = async (data: Data) => {

@@ -79,8 +79,6 @@ export default function InputForm() {
         edges,
       };
 
-      // console.log(payload)
-
       dispatch(setWorkflow(payload));
       router.push("/workflows/view");
     } catch (error) {
